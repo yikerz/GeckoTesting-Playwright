@@ -1,64 +1,57 @@
 import { expect, test } from '@playwright/test';
+import { HomePage } from '../pages/HomePage';
+import { LoginPage } from '../pages/LoginPage';
 
-test.describe('Login functionalities', () => {
-    
+test.describe('Login Successful', () => {
+    let loginPage;
+    let homePage;
+
+    test.beforeEach(async({page}) => {
+        loginPage = new LoginPage(page);
+        homePage = new HomePage(page);
+    })
+
     test('Login with correct email and password', async ({page}) => {
-        // Given A user access to the login page
-        await page.goto('http://localhost:3000/login');
-        // When A "<email>" and "<password>" are inserted
-        await page.click('id=email');
-        await page.locator('id=email').fill('Yikerz.Testing+11@gmail.com');
-        await page.click('id=password');
-        await page.locator('id=password').fill('Testing@1');
-        // And The sign in button is clicked
-        await page.getByRole('button', { name: 'Sign In' }).click();
-        // Then The home page should be displayed
-        await page.waitForURL('http://localhost:3000/', {timeout: 10 * 1000});
-        // And The logout button is displayed
-        const logoutButton = page.getByRole('button', { name: 'Logout' });
+        const email = 'Yikerz.Testing+11@gmail.com';
+        const password = 'Testing@1';
+        
+        await loginPage.navigate();
+        await loginPage.login(email, password);
+        await homePage.waitForURL(10*1000);
+        const logoutButton = await homePage.getLogoutButton();
         await expect(logoutButton).toBeEnabled();
     })
-    
+
     test('Login with incorrect email or password', async ({page}) => {
-        // Given A user access to the login page
-        await page.goto('http://localhost:3000/login');
-        // When A "<email>" and "<password>" are inserted
-        await page.click('id=email');
-        await page.locator('id=email').fill('Yikerz.Testing+11@gmail.com');
-        await page.click('id=password');
-        await page.locator('id=password').fill('wrongPassword');
-        // And The sign in button is clicked
-        await page.getByRole('button', { name: 'Sign In' }).click();
-        // Then Alert with "Incorrect username or password." is displayed
-        await expect(page.getByText('Incorrect username or password.')).toBeVisible();
-    })
+        const email = 'Yikerz.Testing+11@gmail.com';
+        const password = 'wrongPassword';
 
+        await loginPage.navigate();
+        await loginPage.login(email, password);
+        const errorMsg = await loginPage.getErrorMessage('Incorrect username or password.');
+        await expect(errorMsg).toBeVisible();
+    })
+    
     test('Login with correct email and password and press refresh button when loading', async ({page}) => {
-        // Given A user access to the login page
-        await page.goto('http://localhost:3000/login');
-        // When A "<email>" and "<password>" are inserted
-        await page.click('id=email');
-        await page.locator('id=email').fill('Yikerz.Testing+11@gmail.com');
-        await page.click('id=password');
-        await page.locator('id=password').fill('Testing@1');
-        // And The sign in button is clicked
-        await page.getByRole('button', { name: 'Sign In' }).click();
-        // And The refresh button is clicked while the page is loading
+        const email = 'Yikerz.Testing+11@gmail.com';
+        const password = 'Testing@1';
+
+        await loginPage.navigate();
+        await loginPage.login(email, password);
         await page.reload();
-        // Then Redirect back to login page
-        await expect(page.locator('id=email')).toBeEnabled();
-        await expect(page.locator('id=password')).toBeEnabled();
-        await expect(page.getByRole('button', { name: 'Sign In' })).toBeEnabled();
+        await expect(await loginPage.getEmailField()).toBeEnabled();
+        await expect(await loginPage.getPasswordField()).toBeEnabled();
+        await expect(await loginPage.getSignInButton()).toBeEnabled();
     })
-
+    
     test('Click on the login button with empty fields', async ({page}) => {
-        // Given A user access to the login page
-        await page.goto('http://localhost:3000/login');
-        // And The sign in button is clicked
-        await page.getByRole('button', { name: 'Sign In' }).click();
-        // Then Alert with "Missing required parameter USERNAME" is displayed for empty fields
-        await expect(page.getByText('Invalid email address')).toBeVisible();
-        await expect(page.getByText('Required')).toBeVisible();
+        const email = '';
+        const password = '';
+
+        await loginPage.navigate();
+        await loginPage.login(email, password);
+        await expect(await loginPage.getErrorMessage('Invalid email address')).toBeVisible();
+        await expect(await loginPage.getErrorMessage('Required')).toBeVisible();
     })
 
-})
+});
