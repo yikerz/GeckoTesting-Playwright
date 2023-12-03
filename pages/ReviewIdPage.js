@@ -39,4 +39,8 @@ exports.ReviewIdPage = class ReviewIdPage {
         await this.modalCloseButton.click();
     }
 
+    async commentOnDoc() {
+        await this.page.getByRole('row', { name: 'TERTIARY TERTIARY_ID doc3.jpg' }).locator('#comment').fill('Image blurred');
+    }
+
 }

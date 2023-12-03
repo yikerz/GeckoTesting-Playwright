@@ -6,6 +6,7 @@ exports.HomePage = class HomePage{
         this.logoutButton = page.getByRole('button', { name: 'Logout' });
         this.idVerificationLinkText = page.getByRole('link', { name: 'ID Verification' });
         this.reviewIdLinkText = page.getByRole('link', { name: 'Review ID' });
+        this.creditCardsLinkText = page.getByRole('link', { name: 'Credit Cards' });
     }
 
     async waitForURL(timeout) {
@@ -26,6 +27,10 @@ exports.HomePage = class HomePage{
 
     async clickReviewId() {
         await this.reviewIdLinkText.click();
+    }
+
+    async clickCreditCards() {
+        await this.creditCardsLinkText.click();
     }
 
 

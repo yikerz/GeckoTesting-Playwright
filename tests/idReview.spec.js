@@ -7,10 +7,12 @@ import { ReviewIdPage } from '../pages/ReviewIdPage';
 test.describe('ID review', () => {
     let loginPage;
     let homePage;
+    let idVerifyPage;
 
     test.beforeEach(async({page}) => {
         loginPage = new LoginPage(page);
         homePage = new HomePage(page);
+        idVerifyPage = new IdVerificationPage(page);
         await loginPage.navigate();
 
         let customerEmail = 'Yikerz.Testing+11@gmail.com';
@@ -29,12 +31,12 @@ test.describe('ID review', () => {
     })
 
     test.afterEach(async({page}) => {
-        let idVerifyPage = new IdVerificationPage(page);
         await idVerifyPage.emptyTable();
     })
 
     test('ID Review', async({page}) => {
-        let employeeEmail = 'Yikerz.Testing@gmail.com';
+        test.slow();
+        let employeeEmail = 'almaqdad55@outlook.com';
         let employeePass = 'Password@1'
         let reviewIdPage = new ReviewIdPage(page);
         const modal = await reviewIdPage.getModal();
@@ -57,9 +59,8 @@ test.describe('ID review', () => {
         expect(modal).toBeVisible();
         await reviewIdPage.clickRejectInModal();
         await reviewIdPage.closeModal();
-        await page.getByRole('row', { name: 'TERTIARY TERTIARY_ID doc3.jpg' }).locator('#comment').click();
-        await page.getByRole('row', { name: 'TERTIARY TERTIARY_ID doc3.jpg' }).locator('#comment').fill('Image blurred');
-        await page.getByRole('button', { name: 'Submit' }).click();
+        await reviewIdPage.commentOnDoc();
+        await page.getByRole('button', { name: 'Submit' }).hover();
     })
 
 })
