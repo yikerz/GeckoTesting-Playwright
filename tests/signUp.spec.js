@@ -27,4 +27,15 @@ test.describe('Sign Up functionalities', () => {
         await page.waitForURL('http://localhost:3000/login', {timeout: 10 * 1000});
     })
 
+    test.only('Sign Up without filling in anything', async ({browser, page}) => {
+        const loginPage = new LoginPage(page);
+        const signUpPage = new SignUpPage(page);
+
+        await loginPage.navigate();
+        await loginPage.clickSignUp();
+        await page.waitForURL('http://localhost:3000/signup');
+        await page.getByText('Sign Up').click();
+        await expect(page.getByText('Given Name(s) is required')).toBeVisible();
+    })
+
 })
