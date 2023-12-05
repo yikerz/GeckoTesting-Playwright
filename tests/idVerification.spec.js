@@ -31,4 +31,17 @@ test.describe('ID verification functionalities', () => {
         await idVerifyPage.verifyDatabase(3);
     })
 
+    test.only('Display invalid file message if file extension is not supported', async ({page}) => {
+        let homePage = new HomePage(page);
+        let idVerifyPage = new IdVerificationPage(page);
+        await homePage.waitForURL(10*1000);
+        await homePage.clickIdVerification();
+        await idVerifyPage.waitForURL(10*1000);
+        await idVerifyPage.testDeleteButton();
+        await idVerifyPage.uploadInvalidDoc(3);
+
+        await page.waitForTimeout(2000);
+        await idVerifyPage.verifyInvalidFileMsg();
+    })
+
 })

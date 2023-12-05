@@ -36,6 +36,22 @@ exports.IdVerificationPage = class IdVerificationPage {
         await this.submitButton.click();
     }
 
+    async uploadInvalidDoc() {
+        await this.addRowButton.click();
+        await this.page.locator(`//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[1]/table/tbody/tr[1]/th[1]/div/div/div`).click();
+        await this.page.locator(`//*[@id='menu-documentCategory']/div[3]/ul/li[1]`).click();
+        await this.page.locator(`//*[@id='root']/div/div[2]/div[2]/div/div/div/div[1]/table/tbody/tr[1]/th[2]/div/div/div`).click();
+        await this.page.locator(`//*[@id='menu-documentType']/div[3]/ul/li[1]`).click();
+        const fileChooserPromise = this.page.waitForEvent('filechooser');
+        await this.page.locator(`//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[1]/table/tbody/tr[1]/th[3]/div/div/label/span`).click();
+        const fileChooser = await fileChooserPromise;
+        await fileChooser.setFiles(`C:\\Users\\ycx-8\\Desktop\\GeckoTesting-Playwright\\docs\\invalidFile.docx`);
+    }
+
+    async verifyInvalidFileMsg() {
+        await expect(this.page.getByText('Invalid File')).toBeVisible;
+    }
+
     async verifySubmission() {
         await this.page.waitForURL('http://localhost:3000/success');
         await expect(this.page.getByText(this.successfulMessage)).toBeVisible();
